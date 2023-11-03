@@ -67,3 +67,27 @@ func TestPreviousMonth_지난해_숫자값을_문자로_반환시_빈시간일�
 	year := Time{}.PreviousYear()
 	fmt.Println(year)
 }
+
+/* 패키지 수준 시간 설정 함수 추가 */
+// package main 에서 init 함수에 위치시켜 최초 time.now() 값을 초기화 합니다.
+// 본 코드에서 시간을 할당하는 부분에 time.now() 코드를 쓰고
+// 유닛 테스트시 SetNowTime 으로 원하는 시간으로 설정
+// 유닛 테스트 종료시 SetNowTime 으로 다시 원래 시간으로 복귀시킵니다.
+func Test_Mocking_시간을_설정하는_기능_테스트(t *testing.T) {
+
+	utcTime := now()
+	fmt.Println("기본 utc 시간:", utcTime)
+
+	SetNowTime(func() time.Time {
+		return time.Date(2023, time.November, 4, 11, 0, 0, 0, time.UTC)
+	})
+	defer func() {
+		SetNowTime(func() time.Time {
+			return time.Date(2023, time.November, 5, 15, 0, 0, 0, time.UTC)
+		})
+		restoreTime := now()
+		fmt.Println("복구 utc 시간:", restoreTime)
+	}()
+	changeTime := now()
+	fmt.Println("변경 utc 시간:", changeTime)
+}
