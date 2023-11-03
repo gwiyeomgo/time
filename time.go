@@ -18,6 +18,28 @@ const (
 	Year         = "2006"
 )
 
+/*
+mocking 을 위한 패키지 수준 시간 설정 함수 추가
+https://labs.yulrizka.com/en/stubbing-time-dot-now-in-golang/
+*/
+type nowFuncT func() time.Time
+
+var nowFunc nowFuncT
+
+/*
+SetNowFunc 함수로 시간을 설정한
+패키지 내부 현재 시간
+*/
+func now() time.Time {
+	if nowFunc == nil {
+		return time.Now().UTC()
+	}
+	return nowFunc()
+}
+func SetNowTime(fn nowFuncT) {
+	nowFunc = fn
+}
+
 type Time struct {
 	location string
 	current  time.Time
