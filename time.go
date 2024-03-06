@@ -2,7 +2,6 @@ package time
 
 import (
 	"errors"
-	"fmt"
 	"time"
 )
 
@@ -91,14 +90,30 @@ func (t Time) PreviousYear() string {
 }
 
 // "20060102"->"2006-01-02"
-func dateStrToTime(str string, strLayout string, returnLayout string) string {
+// "2006-01-02" ->"20060102"
+func convertDateFormat(str string, strLayout string, returnLayout string) (string, error) {
 	// 문자열을 시간으로 파싱
 	parsedTime, err := time.Parse(strLayout, str)
 	if err != nil {
-		fmt.Println("날짜 파싱 오류:", err)
+		return "", err
 	}
 
 	// 원하는 날짜 형식으로 포맷팅
-	return parsedTime.Format(returnLayout)
+	return parsedTime.Format(returnLayout), nil
 
+}
+
+func checkPastDate(dateString string) (bool, error) {
+	// 주어진 날짜 문자열을 Time으로 파싱
+	date, err := time.Parse("20060102", dateString)
+	if err != nil {
+		return false, err
+	}
+	currentTime := time.Now().Truncate(24 * time.Hour)
+	if date.Equal(currentTime) {
+		return false, nil
+	}
+	isPast := date.Before(currentTime)
+
+	return isPast, nil
 }

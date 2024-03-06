@@ -91,3 +91,32 @@ func Test_Mocking_시간을_설정하는_기능_테스트(t *testing.T) {
 	changeTime := now()
 	fmt.Println("변경 utc 시간:", changeTime)
 }
+
+func TestCheckPastDate(t *testing.T) {
+	result, _ := checkPastDate("20240208")
+	result1, _ := checkPastDate("20240209")
+	result2, _ := checkPastDate("20240207")
+
+	assert.Equal(t, false, result)
+	assert.Equal(t, false, result1)
+	assert.Equal(t, true, result2)
+}
+
+// "20060102"
+// "2006-01-02"
+func Test_convertDateFormat(t *testing.T) {
+	result, _ := convertDateFormat("20240208", DateLayout8, DateLayout10)
+	assert.Equal(t, "2024-02-08", result)
+
+	result2, err := convertDateFormat("20240208", DateLayout10, DateLayout8)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	assert.Equal(t, "", result2)
+
+	result3, err := convertDateFormat("2024-02-08", DateLayout10, DateLayout19)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	assert.Equal(t, "2024-02-08 00:00:00", result3)
+}
